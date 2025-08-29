@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lua Editor</title>
+    <style>        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #editor {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Other stuff -->
+
+    <div id="editor"></div>
+
+    <!-- Loads Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.37.0/min/vs/loader.js"></script>
+    
+    <script>
+        // Monaco Editor configuration and initialization
+        require.config({
+            paths: {
+                vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.37.0/min/vs'
+            }
+        });
+
+        require(['vs/editor/editor.main'], function() {
+            // Create the Monaco Editor instance and make it fullscreen
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: 'print("Hello Fusion!")',
+                language: 'cLua',
+                theme: 'vs-dark'
+            });
+
+            // Register the custom language
+            monaco.languages.register({ id: 'cLua' });
+
+            // Define the tokenizer for the custom language
+            monaco.languages.setMonarchTokensProvider('cLua', {
+                tokenizer: {
+                    root: [
+                        // Keywords (reserved words)
+                        [/\b(?:start|end|program|initialize|display)\b/, 'keyword'],
+                        
+                        // Operators
+                        [/[=;\+\-\*\/]/, 'operator'],
+                        
+                        // Variable names
+                        [/[a-zA-Z_]\w*/, 'variable'],
+                        
+                        // Numbers
+                        [/\b\d+\b/, 'number'],
+                        
+                        // Strings
+                        [/"([^"\\]|\\.)*"/, 'string'],
+                        
+                        // Comments
+                        [/\/\/.*$/, 'comment'],
+                    ]
+                }
+            });
+
+            monaco.languages.registerCompletionItemProvider('mylang', {
+                provideCompletionItems: function(model, position) {
+                    var suggestions = [
+                        {
+                            label: 'initialize',
+                            kind: monaco.languages.CompletionItemKind.Keyword,
+                            insertText: 'initialize ${1:variable} = ${2:value};',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        },
+                        {
+                            label: 'display',
+                            kind: monaco.languages.CompletionItemKind.Keyword,
+                            insertText: 'display ${1:expression};',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        }
+                    ];
+                    return { suggestions: suggestions };
+                }
+            });
+
+            monaco.languages.registerHoverProvider('cLua', {
+                provideHover: function(model, position) {
+                    var word = model.getWordAtPosition(position);
+                    if (word) {
+                        return {
+                            contents: [
+                                { value: '**' + word.word + '**' },
+                                { value: 'This is a custom language keyword or identifier.' }
+                            ]
+                        };
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
