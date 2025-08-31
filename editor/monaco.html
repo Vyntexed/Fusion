@@ -92,12 +92,15 @@
             monaco.languages.setMonarchTokensProvider('cLua', {
                 tokenizer: {
                     root: [
-                        [new RegExp(`\\b(${customKeywords.map(k => k.word).join('|')})\\b`), 'keyword'],
+                        [/"([^"\\]|\\.)*"/, 'string'],        // strings first
+                        [/'([^'\\]|\\.)*'/, 'string'],
+                        [/--.*$/, 'comment'],                                 // comments with --
+                        [/\/\/.*$/, 'comment'],             // comments with //
+                        [new RegExp(`\\b(${customKeywords.map(k => k.word).join('|')})\\b`), 'keyword'], // then keywords
                         [/[=;\+\-\*\/]/, 'operator'],
                         [/[a-zA-Z_]\w*/, 'variable'],
                         [/\b\d+\b/, 'number'],
-                        [/"([^"\\]|\\.)*"/, 'string'],
-                        [/\/\/.*$/, 'comment']
+
                     ]
                 }
             });
@@ -131,16 +134,16 @@
                 }
             });
             
-            monaco.editor.defineTheme('my-dark', {
+            monaco.editor.defineTheme('dark-mode', {
                 base: 'vs-dark', // or 'vs'
                 inherit: true,
                 rules: [
                     { token: 'keyword', foreground: '6FA8DC' },  // your blue
                     { token: 'variable', foreground: 'FFFFFF' }, // white
-                    { token: 'number', foreground: 'FFFFFF' },   // white
-                    { token: 'string', foreground: 'FFFFFF' },   // white
-                    { token: 'comment', foreground: 'AAAAAA' },  // gray
-                    { token: 'operator', foreground: 'FFFFFF' }  // white
+                    { token: 'number', foreground: 'FF9E2B' },   // white
+                    { token: 'string', foreground: '00FF9F' },   // white
+                    { token: 'comment', foreground: '808080' },  // gray
+                    { token: 'operator', foreground: 'FFFFFF' },  // white
                 ],
                 colors: {}
             });
@@ -150,7 +153,7 @@
             var editor = monaco.editor.create(document.getElementById('editor'), {
                 value: 'print("Hello Fusion!")',
                 language: 'cLua',
-                theme: 'vs-dark'
+                theme: 'dark-mode'
             });
         });
     </script>
