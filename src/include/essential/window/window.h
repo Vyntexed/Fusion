@@ -1,28 +1,25 @@
 #pragma once
-
 #include <windows.h>
+#include <string>
+#include "../logger/logger.h"
 
 class AppWindow {
 public:
-    // Constructor
-    explicit AppWindow(HINSTANCE hInst);
+    AppWindow(HINSTANCE hInst);
 
-    // Create the window
     bool Create(LPCWSTR title, int width, int height);
-
-    // Show the window
     void Show(int nCmdShow);
-
-    // Run the message loop
     void RunMessageLoop();
 
-    // Getter for hwnd
-    HWND getHWND() const;
+    // New drawing helpers
+    void drawText(const std::wstring& text);
+    void drawButton(int id, const std::wstring& label, int x, int y, int width, int height);
+
+    HWND getHWND() const { return hwnd; }
 
 private:
-    HWND hwnd;          // Window handle (private)
     HINSTANCE hInstance;
+    HWND hwnd;
 
-    // Window procedure
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

@@ -1,1 +1,1 @@
-g++ main.cpp include/monaco/editor.cpp include/essential/network/network.cpp include/essential/logger/logger.cpp include/essential/window/window.cpp include/windows/start/start.cpp include/windows/loader/loader.cpp include/windows/edit/edit.cpp -o Fusion.exe
+g++ main.cpp include/monaco/editor.cpp include/essential/network/network.cpp include/essential/logger/logger.cpp include/essential/window/window.cpp include/windows/start/start.cpp include/windows/loader/loader.cpp include/windows/edit/edit.cpp -o Fusion.exe -lgdi32
