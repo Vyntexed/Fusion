@@ -1,1 +1,1 @@
-g++ -o Fusion.exe main.cpp includes/monaco/editor.cpp
+g++ main.cpp include/monaco/editor.cpp include/essential/network/network.cpp include/essential/logger/logger.cpp include/essential/window/window.cpp -o Fusion.exe

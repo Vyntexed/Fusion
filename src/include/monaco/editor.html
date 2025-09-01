@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cLua Editor</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #editor {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor"></div>
+
+    <!-- Loads Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.37.0/min/vs/loader.js"></script>
+    
+    <script>
+        require.config({
+            paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.37.0/min/vs' }
+        });
+
+        require(['vs/editor/editor.main'], function() {
+
+            // === 1. Define all custom keywords in one place ===
+            const customKeywords = [
+                {
+                    word: 'print',
+                    snippet: 'print("${1:}")',
+                    description: 'Prints something to the terminal/output'
+                },
+
+                {
+                    word: 'for',
+                    snippet: 'for ',
+                    description: 'Enumerates through a table {"1","2"} or from 1 to 10'
+                },
+                {
+                    word: 'return',
+                    snippet: 'return ${1};',
+                    description: 'Returns a value'
+                },
+                {
+                    word: 'end',
+                    snippet: 'end',
+                    description: 'A keyword used to close a function'
+                },
+                {
+                    word: 'do',
+                    snippet: 'do\n    ${1}\nend',
+                    description: "A mandatory keyword for most of the simple logic"
+                },
+                {
+                    word: 'in',
+                    snippet: 'in ${1}',
+                },
+                {
+                    word: "pairs",
+                    snippet: "pairs(${1})",
+                    description: "Used to enumerate thorugh a table"
+                },
+                {
+                    word: "local",
+                    snippet: "local ${1}",
+                    description: "Used to define a variable"
+                },
+                {
+                    word:'true',
+                    snippet:'true',
+                },
+                {
+                    word:'false',
+                    snippet:'false',
+                },
+                {
+                    word:'nil',
+                    snippet:'nil',
+                }
+            ];
+
+            // === 2. Register the custom language ===
+            monaco.languages.register({ id: 'cLua' });
+
+            // === 3. Syntax highlighting (tokenizer) ===
+            monaco.languages.setMonarchTokensProvider('cLua', {
+                tokenizer: {
+                    root: [
+                        [/"([^"\\]|\\.)*"/, 'string'],        // strings first
+                        [/'([^'\\]|\\.)*'/, 'string'],
+                        [/--.*$/, 'comment'],                                 // comments with --
+                        [/\/\/.*$/, 'comment'],             // comments with //
+                        [new RegExp(`\\b(${customKeywords.map(k => k.word).join('|')})\\b`), 'keyword'], // then keywords
+                        [/[=;\+\-\*\/]/, 'operator'],
+                        [/[a-zA-Z_]\w*/, 'variable'],
+                        [/\b\d+\b/, 'number'],
+
+                    ]
+                }
+            });
+
+            // === 4. Autocomplete / snippets ===
+            monaco.languages.registerCompletionItemProvider('cLua', {
+                provideCompletionItems: function(model, position) {
+                    const suggestions = customKeywords.map(k => ({
+                        label: k.word,
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: k.snippet,
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                    }));
+                    return { suggestions: suggestions };
+                }
+            });
+
+            // === 5. Hover tooltips ===
+            monaco.languages.registerHoverProvider('cLua', {
+                provideHover: function(model, position) {
+                    const word = model.getWordAtPosition(position);
+                    if (!word) return;
+
+                    const keyword = customKeywords.find(k => k.word === word.word);
+                    return {
+                        contents: [
+                            { value: '**' + word.word + '**' },
+                            { value: keyword ? keyword.description : 'This is a custom language keyword or identifier.' }
+                        ]
+                    };
+                }
+            });
+            
+            monaco.editor.defineTheme('dark-mode', {
+                base: 'vs-dark', // or 'vs'
+                inherit: true,
+                rules: [
+                    { token: 'keyword', foreground: '6FA8DC' },  // your blue
+                    { token: 'variable', foreground: 'FFFFFF' }, // white
+                    { token: 'number', foreground: 'FF9E2B' },   // white
+                    { token: 'string', foreground: '00FF9F' },   // white
+                    { token: 'comment', foreground: '808080' },  // gray
+                    { token: 'operator', foreground: 'FFFFFF' },  // white
+                ],
+                colors: {}
+            });
+
+            
+            // === 6. Create the Monaco editor instance ===
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: 'print("Hello Fusion!")',
+                language: 'cLua',
+                theme: 'dark-mode'
+            });
+        });
+    </script>
+</body>
+</html>
