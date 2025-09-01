@@ -23,21 +23,11 @@ int main() {
         Logger::success("Successfully installed editor at " + Editor::get_editor());
     }
 
-    HINSTANCE hInstance = GetModuleHandle(NULL);
-    int nCmdShow = SW_SHOWDEFAULT;
-
     Logger::init();
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    // Editor stuff …
-    AppWindow window(hInstance);
-    if (!window.Create(L"Fusion Window", 800, 600)) {
-        Logger::error("Failed to create window!");
-        return 0;
-    }
-    window.Show(nCmdShow);
-    window.RunMessageLoop();
+    // Window stuff
 
     Logger::close();
     return 0;
