@@ -36,9 +36,7 @@ int main() {
         Logger::fatal("Could not create start_window");
         std::cin.get(); // pauses execution without closing window
         return 0;
-    }
-
-    starting_window.drawText(L"Hello, World!");
+    };
 
     Logger::close();
     return 0;

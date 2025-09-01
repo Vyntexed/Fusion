@@ -1,4 +1,5 @@
 #include "start.h"
+#include "../../essential/logger/logger.h"
 
 int start_window::create()
 {
@@ -11,29 +12,31 @@ int start_window::create()
     window = AppWindow(hInstance);
 
     if (!window.Create(L"Fusion", 300, 600)) {
-        Logger::error("Failed to create window!");
+        Logger::error("Failed to create window");
         return 0;
     }
 
+    Logger::success("Successfully created start_window");
+
+    // Add a button directly here
+    HWND hwnd = window.getHWND();
+    if (hwnd) {
+        CreateWindowW(
+            L"BUTTON", L"Click Me",
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+            50, 50, 200, 40,        // x, y, width, height
+            hwnd,
+            (HMENU)(INT_PTR)1,      // button ID = 1
+            GetModuleHandle(NULL),
+            nullptr
+        );
+
+        Logger::debug("Button created in start_window");
+    }
+
+    // Show and run
     window.Show(nCmdShow);
     window.RunMessageLoop();
 
     return 1; // success
-}
-
-void start_window::drawText(const std::wstring& text)
-{
-    HWND hwnd = window.getHWND(); // get window handle safely
-    if (!hwnd) return;
-
-    RECT rect;
-    GetClientRect(hwnd, &rect);
-
-    HDC hdc = GetDC(hwnd);
-    if (!hdc) return;
-
-    DrawTextW(hdc, text.c_str(), -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-
-    ReleaseDC(hwnd, hdc);
-    InvalidateRect(hwnd, nullptr, TRUE); // force repaint
 }
