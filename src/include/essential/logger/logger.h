@@ -17,5 +17,6 @@ public:
     static void success(const std::string& message);  // Green
     static void warning(const std::string& message);  // Yellow
     static void error(const std::string& message);    // Red
-    static void debug(const std::string& message);    // Blue
+    static void debug(const std::string& message);    // White
+    static void fatal(const std::string& message);    // Black
 };

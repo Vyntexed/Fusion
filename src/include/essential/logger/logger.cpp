@@ -66,3 +66,7 @@ void Logger::error(const std::string& message) {
 void Logger::debug(const std::string& message) {
     log("#ffffffff", "[DEBUG] " + message);     // White
 }
+
+void Logger::fatal(const std::string& message) {
+    log("#ff0000ff", "[💀] " + message);     // Red
+}

@@ -3,7 +3,8 @@
 
 #include "include/monaco/editor.h"
 #include "include/essential/logger/logger.h"
-#include "include/essential/window/window.h" // Your existing window class
+#include "include/essential/window/window.h"
+#include "include/windows/start/start.h"
 
 int main() {
 
@@ -28,6 +29,16 @@ int main() {
     SetConsoleCP(CP_UTF8);
 
     // Window stuff
+
+    start_window starting_window;
+
+    if (!starting_window.create()){
+        Logger::fatal("Could not create start_window");
+        std::cin.get(); // pauses execution without closing window
+        return 0;
+    }
+
+    starting_window.drawText(L"Hello, World!");
 
     Logger::close();
     return 0;
